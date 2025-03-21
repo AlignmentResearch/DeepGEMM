@@ -103,7 +103,7 @@ def build(name: str, arg_defs: tuple, code: str) -> Runtime:
                   '--diag-suppress=177,174,940']
     cxx_flags = ['-fPIC', '-O3', '-Wno-deprecated-declarations', '-Wno-abi']
     flags = [*nvcc_flags, f'--compiler-options={",".join(cxx_flags)}']
-    include_dirs = [get_jit_include_dir()]
+    include_dirs = [get_jit_include_dir(), '/home/dev/llm/third_party/DeepGEMM/third-party/cutlass/include']
 
     # Build signature
     enable_sass_opt = get_nvcc_compiler()[1] <= '12.8' and int(os.getenv('DG_DISABLE_FFMA_INTERLEAVE', 0)) == 0
