@@ -34,7 +34,7 @@ GemmType::run(out, rhs_scales, grouped_layout,
 
 def m_grouped_gemm_fp8_fp8_bf16_nt_contiguous(lhs: Tuple[torch.Tensor, torch.Tensor],
                                               rhs: Tuple[torch.Tensor, torch.Tensor],
-                                              out: torch.Tensor, m_indices: torch.Tensor) -> None:
+                                              out: torch.Tensor, m_indices: torch.Tensor, error_if_expensive: bool = True) -> None:
     """
     Do a grouped GEMM (contiguous format) with FP8 inputs and BF16 output, with 1x128 LHS scaling and 128x128 RHS scaling.
     LHS, RHS, RHS scaling factors, and output tensors must be in contiguous format.
@@ -74,7 +74,7 @@ def m_grouped_gemm_fp8_fp8_bf16_nt_contiguous(lhs: Tuple[torch.Tensor, torch.Ten
     assert out.is_contiguous() and m_indices.is_contiguous()
 
     # LHS scales must be transposed for TMA load, but not for RHS scales
-    lhs_scales = get_col_major_tma_aligned_tensor(lhs_scales)
+    lhs_scales = get_col_major_tma_aligned_tensor(lhs_scales, error_if_expensive=error_if_expensive)
     assert rhs_scales.is_contiguous()
 
     # Do nothing if `m` is zero
@@ -110,7 +110,7 @@ def m_grouped_gemm_fp8_fp8_bf16_nt_contiguous(lhs: Tuple[torch.Tensor, torch.Ten
 
 def m_grouped_gemm_fp8_fp8_bf16_nt_masked(lhs: Tuple[torch.Tensor, torch.Tensor],
                                           rhs: Tuple[torch.Tensor, torch.Tensor],
-                                          out: torch.Tensor, masked_m: torch.Tensor, expected_m: int) -> None:
+                                          out: torch.Tensor, masked_m: torch.Tensor, expected_m: int, error_if_expensive: bool = True) -> None:
     """
     Do a grouped GEMM (masked format) with FP8 inputs and BF16 output, with 1x128 LHS scaling and 128x128 RHS scaling.
     LHS, RHS, RHS scaling factors, and output tensors must be in contiguous format.
@@ -152,7 +152,7 @@ def m_grouped_gemm_fp8_fp8_bf16_nt_masked(lhs: Tuple[torch.Tensor, torch.Tensor]
     assert out.is_contiguous() and masked_m.is_contiguous()
 
     # LHS scales must be transposed for TMA load, but not for RHS scales
-    lhs_scales = get_col_major_tma_aligned_tensor(lhs_scales)
+    lhs_scales = get_col_major_tma_aligned_tensor(lhs_scales, error_if_expensive=error_if_expensive)
     assert rhs_scales.is_contiguous()
 
     # Auto-tuning with compilation
