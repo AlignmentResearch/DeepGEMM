@@ -113,7 +113,7 @@ def get_best_configs(m: int, n: int, k: int, num_groups: int, num_sms: int,
 
 def gemm_fp8_fp8_bf16_nt(lhs: Tuple[torch.Tensor, torch.Tensor],
                          rhs: Tuple[torch.Tensor, torch.Tensor],
-                         out: torch.Tensor) -> None:
+                         out: torch.Tensor, error_if_expensive: bool=True) -> None:
     """
     Do a normal GEMM with FP8 inputs and BF16 output, with 1x128 LHS scaling and 128x128 RHS scaling.
     LHS, RHS, RHS scaling factors, and output tensors must be in contiguous format.
@@ -148,7 +148,7 @@ def gemm_fp8_fp8_bf16_nt(lhs: Tuple[torch.Tensor, torch.Tensor],
 
     # LHS scales must be transposed for TMA load, but not for RHS scales
     # NOTES: `get_tma_aligned_lhs_scales` may launch a kernel if not processed by previous kernels
-    lhs_scales = get_col_major_tma_aligned_tensor(lhs_scales)
+    lhs_scales = get_col_major_tma_aligned_tensor(lhs_scales, error_if_expensive=error_if_expensive)
     assert rhs_scales.is_contiguous()
 
     # Do nothing if `m` is zero
