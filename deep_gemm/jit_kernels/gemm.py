@@ -137,7 +137,7 @@ def gemm_fp8_fp8_bf16_nt(lhs: Tuple[torch.Tensor, torch.Tensor],
     assert n % 64 == 0 and k % 128 == 0
 
     # Type and shape checks
-    assert m == m_ and n == n_ and k == k_
+    assert m == m_ and n == n_ and k == k_, f"lhs: ({m=}, {k=}), rhs: ({n=}, {k_=}), out: ({m_=}, {n_=})"
     assert n > 0 and k > 0
     assert lhs_scales.shape == (m, (k + 127) // 128)
     assert rhs_scales.shape == ((n + 127) // 128, (k + 127) // 128)
